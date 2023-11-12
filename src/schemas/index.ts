@@ -71,6 +71,16 @@ const mutation = new GraphQLObjectType({
         const response = await jsonServer.post<User>('/users', { firstName: args.firstName, age: args.age, companyId: args.companyId });
         return response.data;
       }
+    },
+    deleteUser: {
+      type: UserType,
+      args: { id: { type: new GraphQLNonNull(GraphQLString) } },
+      resolve: async (source, args, context, info) => {
+        const response = await jsonServer.get<User>(`/users/${args.id}`);
+        const user = response.data;
+        await jsonServer.delete(`/users/${user.id}`);
+        return user;
+      }
     }
   }
 });
