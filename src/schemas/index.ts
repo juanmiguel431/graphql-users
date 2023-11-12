@@ -1,4 +1,4 @@
-import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
 import jsonServer from '../apis/jsonServer';
 import { Company, User } from '../models';
 
@@ -57,6 +57,25 @@ const RootQuery = new GraphQLObjectType({
   }
 });
 
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
+        companyId: { type: GraphQLString,  },
+      },
+      resolve: async (source, args, context, info) => {
+        const response = await jsonServer.post<User>('/users', { firstName: args.firstName, age: args.age, companyId: args.companyId });
+        return response.data;
+      }
+    }
+  }
+});
+
 export const schema = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: mutation
 });
