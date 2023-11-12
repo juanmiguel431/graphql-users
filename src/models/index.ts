@@ -4,6 +4,7 @@ export type User = {
   firstName: string;
   age: number;
   companyId: string;
+  company: Company;
 }
 
 export type Company = {

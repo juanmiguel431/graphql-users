@@ -21,7 +21,7 @@ const UserType = new GraphQLObjectType({
     company: {
       type: CompanyType,
       resolve: async (source: User, args, context, info) => {
-        const response = await jsonServer.get(`/companies/${source.companyId}`);
+        const response = await jsonServer.get<Company[]>(`/companies/${source.companyId}`);
         return response.data;
       }
     }
@@ -35,10 +35,18 @@ const RootQuery = new GraphQLObjectType({
       type: UserType,
       args: { id: { type: GraphQLString } },
       resolve: async (source, args, context, info) => {
-        const response = await jsonServer.get(`/users/${args.id}`);
+        const response = await jsonServer.get<User[]>(`/users/${args.id}`);
         return response.data;
       }
     },
+    company: {
+      type: CompanyType,
+      args: { id: { type: GraphQLString } },
+      resolve: async (source, args, context, info) => {
+        const response = await jsonServer.get<Company[]>(`/companies/${args.id}`);
+        return response.data
+      }
+    }
   }
 });
 
