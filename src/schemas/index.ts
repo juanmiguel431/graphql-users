@@ -1,17 +1,24 @@
-import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
 import jsonServer from '../apis/jsonServer';
 import { Company, User } from '../models';
 
-const CompanyType = new GraphQLObjectType({
+const CompanyType: any = new GraphQLObjectType({
   name: 'Company',
-  fields: {
+  fields: () => ({
     id: { type: GraphQLString },
     name: { type: GraphQLString },
-    description: { type: GraphQLString }
-  }
+    description: { type: GraphQLString },
+    users: {
+      type: new GraphQLList(UserType),
+      resolve: async (source: Company, args, context, info) => {
+        const response = await jsonServer.get<User[]>(`/companies/${source.id}/users`);
+        return response.data;
+      }
+    }
+  })
 })
 
-const UserType = new GraphQLObjectType({
+const UserType: any = new GraphQLObjectType({
   name: 'User',
   fields: {
     id: { type: GraphQLString },
